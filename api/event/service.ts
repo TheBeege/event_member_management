@@ -18,4 +18,23 @@ export default class EventService {
             events: modelList
         };
     }
+
+    static async createEvent(ctx: ContextWithLoggerDb) {
+        const eventRepository = ctx.dbTransactionManager.getRepository(EventModel);
+
+        let eventModel;
+        try {
+            eventModel = await eventRepository.create(ctx.body);
+        } catch (e) {
+            // TODO: setup error system
+            ctx.status = 500;
+            ctx.body = {
+                message: 'InternalServerError',
+                reason: 'Encountered error attempting to save event'
+            }
+        }
+
+        ctx.status = 201;
+        ctx.body = eventModel;
+    }
 }
